@@ -1,0 +1,9 @@
+# Object files
+*.o
+
+# Librabry files
+*.a
+
+# Executable files
+*.exe
+*.pyc
