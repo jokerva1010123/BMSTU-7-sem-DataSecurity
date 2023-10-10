@@ -1,0 +1,4 @@
+*.out
+*.o
+*.exe
+./lab_02/out
