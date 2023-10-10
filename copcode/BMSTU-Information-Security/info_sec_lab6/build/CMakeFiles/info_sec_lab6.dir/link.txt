@@ -1,0 +1,1 @@
+/usr/bin/g++ -g -rdynamic CMakeFiles/info_sec_lab6.dir/main.cpp.o CMakeFiles/info_sec_lab6.dir/huffman.cpp.o CMakeFiles/info_sec_lab6.dir/binarytree.cpp.o CMakeFiles/info_sec_lab6.dir/utils.cpp.o -o info_sec_lab6 
