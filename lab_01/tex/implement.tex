@@ -1,0 +1,67 @@
+\chapter{Технологическая часть}
+
+В данном разделе будут рассмотрены средства реализации, а также представлены листинги реализаций алгоритма шифрования машины <<Энигма>>.
+
+\section{Средства реализации}
+В данной работе для реализации был выбран язык программирования $C$. Данный язык удоволетворяет поставленным критериям по средствам реализации.
+
+\section{Реализация алгоритма}
+
+В листингах \ref{lst:enigma1} представлена реализация алгоритма шифрования машины <<Энигма>>.
+
+\begin{center}
+    \captionsetup{justification=raggedright,singlelinecheck=off}
+    \begin{lstlisting}[label=lst:enigma1,caption=Реализация алгоритма шифрования машины <<Энигма>>]
+int main(int argc, char* argv[]) { 
+	int stringSize;
+	char *string;
+
+	FILE *f = fopen("input.txt", "rb");
+	if (!f) {
+		printf("Can not open input file.");
+		return 1;
+	}
+
+	if (fscanf(f, "%d\n", &stringSize) != 1) {
+		printf("Can not input size of symbols.");
+		return 1;
+	}
+	
+	string = malloc(stringSize); 
+	for (int i = 0; i < stringSize; i++) {
+		if (fscanf(f, "%c", &string[i]) != 1) {
+			printf("Can not read symbols.");
+			return 1;
+		}
+	}
+	
+	int scrollCounter = 0;
+	for (int i = 0; i < stringSize; i++) {
+		if (string[i] != ' ') {
+			string[i] = secondSwitch(
+				secondFastRotorEncoding(
+				secondMiddleRotorEncoding(
+				secondSlowRotorEncoding(
+				getReflectedChar(
+				firstSlowRotorEncoding(
+				firstMiddleRotorEncoding(
+				firstFastRotorEncoding(
+				firstSwitch(string[i])
+				)))))))); 
+			scrollCounter++;
+			scrollFastRotor();
+			if (scrollCounter % 26 == 0)
+				scrollMiddleRotor();
+			if (scrollCounter % (26 * 26) == 0)
+				scrollSlowRotor();
+		}
+	}
+
+	for (int i = 0; i < stringSize; i++) printf("%c", string[i]);
+	printf("\n");
+}
+\end{lstlisting}
+\end{center}
+\section*{Вывод}
+
+Были представлены листинги реализаций алгоритма шифрования в машине <<Энигма>> согласно алгоритму, представленному в первой части, а также проведено тестирование разработанной программы.
