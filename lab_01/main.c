@@ -3,7 +3,6 @@
 
 #define ALPHABET_LEN 256
 
-
 char reflectorArr1[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 
 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 
 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 
@@ -136,16 +135,20 @@ int secondSlowRotorEncoding(char c) {
 	}
 }
 
+int secondMiddleRotorEncoding(int index) {
+	return middleRotorArr[index];
+}
+
+char secondFastRotorEncoding(int index) {
+	return fastRotorArr[index];
+}
+
 void scrollMiddleRotor() {
 	int tmp = fastRotorArr[0];
 	for (int i = 0; i < ALPHABET_LEN - 1; i++) {
 		middleRotorArr[i] = middleRotorArr[i + 1];
 	}
 	middleRotorArr[ALPHABET_LEN - 1] = tmp;
-}
-
-char secondFastRotorEncoding(int index) {
-	return fastRotorArr[index];
 }
 
 char secondSwitch(char c) {
@@ -162,9 +165,6 @@ void scrollFastRotor() {
 	fastRotorArr[ALPHABET_LEN - 1] = tmp;
 }
 
-int secondMiddleRotorEncoding(int index) {
-	return middleRotorArr[index];
-}
 
 void scrollSlowRotor() {
 	char tmp = slowRotorArr[0];
@@ -179,6 +179,7 @@ int main(int argc, char* argv[]) {
 	char *string;
 
 	FILE *f = fopen("input.txt", "rb");
+	FILE *fo = fopen("output.txt", "wb");
 	if (!f) {
 		printf("Не удалось открыть файл!");
 		return 1;
@@ -219,6 +220,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	for (int i = 0; i < stringSize; i++) printf("%c", string[i]);
-	printf("\n");
+	for (int i = 0; i < stringSize; i++) fprintf(fo, "%c", string[i]);
+	free(string);
 }
+// #0t4%%%]nq/l
