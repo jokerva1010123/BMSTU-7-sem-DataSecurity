@@ -1,5 +1,5 @@
 CC := gcc
-MAIN_APP := a.out
+MAIN_APP := a.exe
 .PHONY : clean
 
 CFLAGS := -std=c99 -Wall -Werror -pedantic -pipe -g3
@@ -10,9 +10,9 @@ $(MAIN_APP) : $(patsubst %.c,%.o, $(wildcard *.c))
 	$(CC) $(CFLAGS) $^ -o $@
 
 %.o : %.c
-	$(CC) $(CFLAGS) -c -MD $<
+	$(CC) $(CFLAGS) -c $<
 
 include $(wildcard *.d)
 
 clean :
-	rm -f *.d *.o *.out *.enc decrypted_*
+	rm -f *.d *.o *.out *.enc decrypted_* *.exe

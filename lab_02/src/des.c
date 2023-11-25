@@ -120,8 +120,13 @@ void adjoin(char c[7], char d[7], uint8_t y[7]) {
   y[5] = (d[3] << 4) | (d[4] & 0xF);
   y[6] = (d[5] << 4) | (d[6] & 0xF);
 }
-
-void key_scheduling(uint8_t init_key[8], uint8_t key[16][6]) {
+/*input key 64 bit
+1. pc1 => 56 bit => two parts 28 bit
+2. left rotation 
+3. include and pc2 => 48 bit
+*/
+void key_scheduling(uint8_t init_key[8], uint8_t key[16][6]) 
+{
   uint8_t x[7];
   different_permutations(pc_1, init_key, x, 7);
   // 4 bits
@@ -249,31 +254,45 @@ void apply_s_box_perm(char x[8], uint8_t f[4]) {
 
   different_permutations(permute, e, f, 4);
 }
-
-void encrypt_block(uint8_t m[8], uint8_t c[8], uint8_t k[8]) {
+/// @brief 
+/// @param m - previous text
+/// @param c - output text
+/// @param k - key
+/*ip convert
+=> 2 part 32 bit
+make key
+run block
+ip-1 convert
+*/
+void encrypt_block(uint8_t m[8], uint8_t c[8], uint8_t k[8]) 
+{
   uint8_t p[8];
   different_permutations(ip, m, p, 8);
-
   uint8_t l[4], r[4];
-  for (unsigned i = 0; i < 4; i++) {
+  for (unsigned i = 0; i < 4; i++)
+  {
     l[i] = p[i];
   }
-  for (unsigned j = 0; j < 4; j++) {
+  for (unsigned j = 0; j < 4; j++) 
+  {
     r[j] = p[j + 4];
   }
   int count = 0;
   uint8_t key[16][6];
   key_scheduling(k, key);
-  while (count < 16) {
+  while (count < 16) 
+  {
     char expaned_text[8];
     xor_expand_key(r, expaned_text, key[count]);
     uint8_t f[4];
     apply_s_box_perm(expaned_text, f);
     uint8_t t[4];
-    for (unsigned i = 0; i < 4; i++) {
+    for (unsigned i = 0; i < 4; i++) 
+    {
       t[i] = l[i];
     }
-    for (unsigned n = 0; n < 4; n++) {
+    for (unsigned n = 0; n < 4; n++) 
+    {
       l[n] = r[n];
       r[n] = t[n] ^ f[n];
     }
@@ -285,19 +304,26 @@ void encrypt_block(uint8_t m[8], uint8_t c[8], uint8_t k[8]) {
   {
     temp[q] = r[q];
   }
-  for (unsigned r = 0; r < 4; r++) {
+  for (unsigned r = 0; r < 4; r++) 
+  {
     temp[r + 4] = l[r];
   }
 
   different_permutations(inv_ip, temp, c, 8);
 }
 
-void DES_Encrypt(uint8_t *key, const char *input, const char *output) {
+void DES_Encrypt(uint8_t *key, const char *input, const char *output) 
+{
   FILE *file_in = fopen(input, "rb");
-  if (file_in == NULL) return;
+  if (file_in == NULL) 
+  {
+    printf("can't open file.");
+    return;
+  }
 
   FILE *file_out = fopen(output, "wb");
-  if (file_out == NULL) {
+  if (file_out == NULL) 
+  {
     fclose(file_in);
     return;
   }
@@ -309,20 +335,24 @@ void DES_Encrypt(uint8_t *key, const char *input, const char *output) {
   uint8_t IV[8] = {0, 0, 0, 0, 0, 0, 0, 0};
   uint8_t y[8];
   int first_read = 1;
-  while (size > 0) {
+  while (size > 0) 
+  {
     uint8_t plain_text[8] = {0};
     size_t bytes_readed = fread(plain_text, 1, 8, file_in);
     size -= bytes_readed;
 
     uint8_t ci[8] = {0};
-    if (first_read) {
+    if (first_read) 
+    {
       encrypt_block(IV, ci, key);
       first_read = 0;
-    } else {
+    } 
+    else 
+    {
       encrypt_block(y, ci, key);
     }
-
-    for (unsigned i = 0; i < 8; i++) {
+    for (unsigned i = 0; i < 8; i++) 
+    {
       y[i] = ci[i] ^ plain_text[i];
     }
 
@@ -333,14 +363,20 @@ void DES_Encrypt(uint8_t *key, const char *input, const char *output) {
   fclose(file_out);
 }
 
-void DES_Decrypt(uint8_t *key, const char *input, const char *output) {
+void DES_Decrypt(uint8_t *key, const char *input, const char *output) 
+{
   uint8_t x[8];
 
   FILE *file_in = fopen(input, "rb");
-  if (file_in == NULL) return;
+  if (file_in == NULL)  
+  {
+    printf("can't open file.");
+    return;
+  }
 
   FILE *file_out = fopen(output, "wb");
-  if (file_out == NULL) {
+  if (file_out == NULL) 
+  {
     fclose(file_in);
     return;
   }
@@ -351,7 +387,8 @@ void DES_Decrypt(uint8_t *key, const char *input, const char *output) {
 
   uint8_t prev_cipher_text[8];
   int first_read = 1;
-  while (size > 0) {
+  while (size > 0) 
+  {
     uint8_t IV[8] = {0, 0, 0, 0, 0, 0, 0, 0};
     uint8_t cipher_text[8];
 
@@ -359,14 +396,18 @@ void DES_Decrypt(uint8_t *key, const char *input, const char *output) {
     size -= bytes_readed;
 
     uint8_t ci[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-    if (first_read) {
+    if (first_read) 
+    {
       encrypt_block(IV, ci, key);
       first_read = 0;
-    } else {
+    } 
+    else 
+    {
       encrypt_block(prev_cipher_text, ci, key);
     }
 
-    for (unsigned i = 0; i < 8; i++) {
+    for (unsigned i = 0; i < 8; i++) 
+    {
       x[i] = ci[i] ^ cipher_text[i];
       prev_cipher_text[i] = cipher_text[i];
     }
