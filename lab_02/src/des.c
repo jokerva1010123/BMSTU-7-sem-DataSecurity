@@ -69,9 +69,10 @@ static const uint8_t pc_2[48] = {
     26, 8,  16, 7,  27, 20, 13, 2,  41, 52, 31, 37, 47, 55, 30, 40,
     51, 45, 33, 48, 44, 49, 39, 56, 34, 53, 46, 42, 50, 36, 29, 32};
 
-void different_permutations(const uint8_t *arr, uint8_t *x, uint8_t *y,
-                            int y_size) {
-  for (int i = 0; i < y_size; i++) {
+void different_permutations(const uint8_t *arr, uint8_t *x, uint8_t *y, int y_size)
+{
+  for (int i = 0; i < y_size; i++) 
+  {
     y[i] = get_bit(x, arr[8 * i], 0) | get_bit(x, arr[8 * i + 1], 1) |
            get_bit(x, arr[8 * i + 2], 2) | get_bit(x, arr[8 * i + 3], 3) |
            get_bit(x, arr[8 * i + 4], 4) | get_bit(x, arr[8 * i + 5], 5) |
@@ -79,40 +80,56 @@ void different_permutations(const uint8_t *arr, uint8_t *x, uint8_t *y,
   }
 }
 
-void left_rotation(char c[7], char x[7], int b) {
-  if (b == 1) {
-    for (unsigned i = 0; i < 7; i++) {
+void left_rotation(char c[7], char x[7], int b) 
+{
+  if (b == 1) 
+  {
+    for (unsigned i = 0; i < 7; i++) 
+    {
       x[i] = (c[i] << 1) | ((c[i + 1] >> 3) & 1);
-      if (i == 6) {
+      if (i == 6) 
+      {
         x[i] = (c[i] << 1) | ((c[0] >> 3) & 1);
       }
     }
-  } else if (b == 2) {
-    for (unsigned i = 0; i < 7; i++) {
+  } 
+  else if (b == 2) 
+  {
+    for (unsigned i = 0; i < 7; i++) 
+    {
       x[i] = (c[i] << 2) | ((c[i + 1] >> 2) & 0x3);
-      if (i == 6) {
+      if (i == 6) 
+      {
         x[i] = (c[i] << 2) | ((c[0] >> 2) & 0x3);
       }
     }
   }
 }
 
-void right_rotation(char c[7], char x[7], int b) {
-  if (b == 1) {
+void right_rotation(char c[7], char x[7], int b) 
+{
+  if (b == 1) 
+  {
     x[0] = (c[0] >> 1) | ((c[6] & 1) << 3);
-    for (unsigned i = 1; i < 7; i++) {
+    for (unsigned i = 1; i < 7; i++) 
+    {
       x[i] = (c[i] >> 1) | ((c[i - 1] & 1) << 3);
     }
-  } else if (b == 2) {
+  } 
+  else if (b == 2) 
+  {
     x[0] = (c[0] >> 2) | ((c[6] & 0x3) << 2);
-    for (unsigned i = 1; i < 7; i++) {
+    for (unsigned i = 1; i < 7; i++) 
+    {
       x[i] = (c[i] >> 2) | ((c[i - 1] & 0x3) << 2);
     }
   }
 }
 
-void adjoin(char c[7], char d[7], uint8_t y[7]) {
-  for (unsigned i = 0; i < 3; i++) {
+void adjoin(char c[7], char d[7], uint8_t y[7]) 
+{
+  for (unsigned i = 0; i < 3; i++) 
+  {
     y[i] = (c[2 * i] << 4) | (c[(2 * i) + 1] & 0xF);
   }
   y[3] = (c[6] << 4) | (d[0] & 0xF);
@@ -132,11 +149,15 @@ void key_scheduling(uint8_t init_key[8], uint8_t key[16][6])
   // 4 bits
   char c[17][7], d[17][7];
 
-  for (unsigned i = 0; i < 4; i++) {
-    if (i < 3) {
+  for (unsigned i = 0; i < 4; i++) 
+  {
+    if (i < 3) 
+    {
       c[0][2 * i] = x[i] >> 4;
       c[0][(2 * i) + 1] = x[i] & 0xF;
-    } else if (i == 3) {
+    } 
+    else if (i == 3) 
+    {
       c[0][2 * i] = x[i] >> 4;
       d[0][0] = x[i] & 0xF;
     }
@@ -149,11 +170,15 @@ void key_scheduling(uint8_t init_key[8], uint8_t key[16][6])
   d[0][6] = x[6] & 0xF;
 
   int count = 1;
-  for (count = 1; count < 17; count++) {
-    if (count == 1 || count == 2 || count == 9 || count == 16) {
+  for (count = 1; count < 17; count++) 
+  {
+    if (count == 1 || count == 2 || count == 9 || count == 16) 
+    {
       left_rotation(c[count - 1], c[count], 1);
       left_rotation(d[count - 1], d[count], 1);
-    } else {
+    } 
+    else 
+    {
       left_rotation(c[count - 1], c[count], 2);
       left_rotation(d[count - 1], d[count], 2);
     }
@@ -161,23 +186,29 @@ void key_scheduling(uint8_t init_key[8], uint8_t key[16][6])
 
   uint8_t y[16][7];
 
-  for (unsigned step = 0; step < 16; step++) {
+  for (unsigned step = 0; step < 16; step++) 
+  {
     adjoin(c[step + 1], d[step + 1], y[step]);
     different_permutations(pc_2, y[step], key[step], 6);
   }
 }
 
-void reverse_key_scheduling(uint8_t init_key[8], uint8_t key[16][6]) {
+void reverse_key_scheduling(uint8_t init_key[8], uint8_t key[16][6]) 
+{
   uint8_t x[7];
   different_permutations(pc_1, init_key, x, 7);
   // 4 bits
   char c[17][7], d[17][7];
 
-  for (unsigned i = 0; i < 4; i++) {
-    if (i < 3) {
+  for (unsigned i = 0; i < 4; i++) 
+  {
+    if (i < 3) 
+    {
       c[0][2 * i] = x[i] >> 4;
       c[0][(2 * i) + 1] = x[i] & 0xF;
-    } else if (i == 3) {
+    } 
+    else if (i == 3) 
+    {
       c[0][2 * i] = x[i] >> 4;
       d[0][0] = x[i] & 0xF;
     }
@@ -190,11 +221,15 @@ void reverse_key_scheduling(uint8_t init_key[8], uint8_t key[16][6]) {
   d[0][6] = x[6] & 0xF;
 
   int count = 0;
-  for (count = 1; count < 16; count++) {
-    if (count == 1 || count == 8 || count == 15) {
+  for (count = 1; count < 16; count++)
+  {
+    if (count == 1 || count == 8 || count == 15) 
+    {
       right_rotation(c[count - 1], c[count], 1);
       right_rotation(d[count - 1], d[count], 1);
-    } else {
+    } 
+    else 
+    {
       right_rotation(c[count - 1], c[count], 2);
       right_rotation(d[count - 1], d[count], 2);
     }
@@ -202,13 +237,15 @@ void reverse_key_scheduling(uint8_t init_key[8], uint8_t key[16][6]) {
 
   uint8_t y[16][7];
 
-  for (unsigned step = 0; step < 16; step++) {
+  for (unsigned step = 0; step < 16; step++) 
+  {
     adjoin(c[step], d[step], y[step]);
     different_permutations(pc_2, y[step], key[step], 6);
   }
 }
 
-void xor_expand_key(uint8_t r[4], char ex[8], uint8_t key[6]) {
+void xor_expand_key(uint8_t r[4], char ex[8], uint8_t key[6]) 
+{
   uint8_t EXP[48] = {32, 1,  2,  3,  4,  5,  4,  5,  6,  7,  8,  9,
                      8,  9,  10, 11, 12, 13, 12, 13, 14, 15, 16, 17,
                      16, 17, 18, 19, 20, 21, 20, 21, 22, 23, 24, 25,
@@ -218,7 +255,8 @@ void xor_expand_key(uint8_t r[4], char ex[8], uint8_t key[6]) {
   different_permutations(EXP, r, d, 6);
 
   uint8_t c[6];
-  for (unsigned j = 0; j < 6; j++) {
+  for (unsigned j = 0; j < 6; j++) 
+  {
     c[j] = d[j] ^ key[j];
   }
 
@@ -233,10 +271,12 @@ void xor_expand_key(uint8_t r[4], char ex[8], uint8_t key[6]) {
   ex[7] = c[5] & 0x3F;
 }
 
-void apply_s_box_perm(char x[8], uint8_t f[4]) {
+void apply_s_box_perm(char x[8], uint8_t f[4]) 
+{
   char y[8];
 
-  for (unsigned i = 0; i < 8; i++) {
+  for (unsigned i = 0; i < 8; i++) 
+  {
     int col = (x[i] & 0x1E) >> 1;
     int row = (x[i] & 0x1) | ((x[i] >> 5) << 1);
     y[i] = sbox[i][row][col];
@@ -244,7 +284,8 @@ void apply_s_box_perm(char x[8], uint8_t f[4]) {
 
   uint8_t e[4];
 
-  for (unsigned j = 0; j < 4; j++) {
+  for (unsigned j = 0; j < 4; j++) 
+  {
     e[j] = (y[2 * j] << 4) | y[(2 * j) + 1];
   }
 

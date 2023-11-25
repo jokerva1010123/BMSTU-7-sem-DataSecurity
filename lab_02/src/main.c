@@ -27,7 +27,7 @@ int main(const int argc, char **argv)
     printf("Wrong mode\n");
     return 0 ;
   }
-   char out_file_name[1000];
+  char out_file_name[1000];
   if (arguments.mode == ENCRYPT) 
   {
     strcpy(out_file_name, "enc_");
